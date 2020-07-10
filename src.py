@@ -55,7 +55,6 @@ class ProblemWrapper:
         self.taken_lectures.extend(  # Not classical lectures
             [Lecture(name='Seminar', ec=5, area='None'), Lecture(name='Practical Course', ec=10, area='None'), Lecture(name='IDP', ec=16, area='None'),
              Lecture(name='Guided Research', ec=10, area='None'), Lecture(name='Thesis', ec=30, area='None'), Lecture(name='Language', ec=6, area='None')])
-        self.lectures = self.lectures[:5]
         self.problem.addVariables(self.lectures, [0, 1])
 
         self.problem.addConstraint(self.credit_constraint, self.lectures)
