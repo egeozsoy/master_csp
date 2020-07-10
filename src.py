@@ -1,6 +1,7 @@
 '''
 Constraint Satisfaction Problem to find best lectures to complete
 Needs to be modified to suit a certain need. Is more of a template now
+Requires python-constraint
 '''
 
 from collections import defaultdict
@@ -37,6 +38,7 @@ class Lecture:
 
 class ProblemWrapper:
     def __init__(self):
+        # TODO add grade optimization
         self.credit_limit = 120
         self.theo_limit = 10
         self.area_limit = [18, 8, 8]
@@ -55,6 +57,13 @@ class ProblemWrapper:
         self.taken_lectures.extend(  # Not classical lectures
             [Lecture(name='Seminar', ec=5, area='None'), Lecture(name='Practical Course', ec=10, area='None'), Lecture(name='IDP', ec=16, area='None'),
              Lecture(name='Guided Research', ec=10, area='None'), Lecture(name='Thesis', ec=30, area='None'), Lecture(name='Language', ec=6, area='None')])
+
+        self.exitings_credits = 0
+        self.existing_theo_credits = 0
+        for taken_lecture in self.taken_lectures:
+            self.exitings_credits += taken_lecture.ec
+            if taken_lecture.theo:
+                self.existing_theo_credits += taken_lecture.ec
         self.problem.addVariables(self.lectures, [0, 1])
 
         self.problem.addConstraint(self.credit_constraint, self.lectures)
@@ -81,25 +90,23 @@ class ProblemWrapper:
         return lectures
 
     def credit_constraint(self, *bools):
-        sum = 0
+        sum = self.exitings_credits
         for idx in range(len(bools)):
             if bools[idx]:
                 sum += self.lectures[idx].ec
-
-        for taken_lecture in self.taken_lectures:
-            sum += taken_lecture.ec
+                if sum >= self.credit_limit * 1.3:
+                    return False
 
         return sum >= self.credit_limit
 
     def theo_constraint(self, *bools):
-        theo_credits = 0
+        theo_credits = self.existing_theo_credits
         for idx in range(len(bools)):
             if bools[idx] and self.lectures[idx].theo:
                 theo_credits += self.lectures[idx].ec
 
-        for taken_lecture in self.taken_lectures:
-            if taken_lecture.theo:
-                theo_credits += taken_lecture.ec
+                if theo_credits >= self.theo_limit * 2:
+                    return False
 
         return theo_credits >= self.theo_limit
 
@@ -146,9 +153,5 @@ class ProblemWrapper:
         return out
 
 
-def main():
-    p = ProblemWrapper()
-
-
 if __name__ == '__main__':
-    main()
+    problem_wrapper = ProblemWrapper()
