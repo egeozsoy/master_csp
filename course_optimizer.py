@@ -9,36 +9,11 @@ from collections import defaultdict
 import constraint
 import pandas as pd
 
-
-class Lecture:
-    def __init__(self, name, ec, area, theo=False):
-        self.name = name
-        self.ec = ec
-        self.theo = theo
-        self.area = area
-
-    def __cmp__(self, other):
-        return self.name < other.name
-
-    def __lt__(self, other):
-        return self.name < other.name
-
-    def _tostr(self):
-        out = f'{self.name} - EC: {self.ec} Area: {self.area}'
-        if self.theo:
-            out += ' - THEO'
-        return out
-
-    def __str__(self):
-        return self._tostr()
-
-    def __repr__(self):
-        return self._tostr()
+from helpers.lecture import Lecture
 
 
 class ProblemWrapper:
     def __init__(self):
-        # TODO add grade optimization
         self.credit_limit = 120
         self.theo_limit = 10
         self.area_limit = [18, 8, 8]
@@ -72,8 +47,9 @@ class ProblemWrapper:
         solutions = self.problem.getSolutions()
         solutions = self.solution_sorting(solutions)
         print(len(solutions))
-        print(self.get_credits_for_solution(solutions[0]))
-        print(self.solution_to_str(solutions[0]))
+        for i in range(5):
+            print(self.get_credits_for_solution(solutions[i]))
+            print(self.solution_to_str(solutions[i]))
 
     def create_lectures(self):
         excel = pd.read_excel('tum_lectures.xlsx')
