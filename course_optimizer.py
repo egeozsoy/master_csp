@@ -16,7 +16,7 @@ class ProblemWrapper:
         self.credit_limit = 120
         self.theo_limit = 10
         self.area_limit = [18, 8, 8]
-        self.max_allowed_lectures = 9  # In Master it is unrealistic to do more than N lectures (except thesis practical courses seminars etc.)
+        self.max_allowed_lectures = 8  # In Master it is unrealistic to do more than N lectures (except thesis practical courses seminars etc.)
         self.taken_lecture_names = ['Computer Vision I: Variational Methods', 'Computer Vision II: Multiple View Geometry', 'Natural Language Processing',
                                     'Introduction to Deep Learning', 'Advanced Deep Learning for Computer Vision']
 
