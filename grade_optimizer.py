@@ -1,7 +1,5 @@
 '''
-Constraint Satisfaction Problem to find best lectures to complete
-Needs to be modified to suit a certain need. Is more of a template now
-Requires python-constraint
+Constraint Satisfaction Problem to find best lectures to select to get the best grade
 '''
 
 from collections import defaultdict
@@ -16,6 +14,7 @@ class ProblemWrapper:
         self.credit_limit = 120
         self.theo_limit = 10
         self.area_limit = [18, 8, 8]
+        self.default_grade = None
         self.lectures = [Lecture(name='Computer Vision I: Variational Methods', ec=8, area='COMPUTER GRAPHICS AND VISION', theo=True, grade=3.0),
                          Lecture(name='Computer Vision II: Multiple View Geometry', ec=8, area='COMPUTER GRAPHICS AND VISION', theo=True, grade=None),
                          Lecture(name='Natural Language Processing', ec=6, area='MACHINE LEARNING AND ANALYTICS', grade=2.3),
@@ -90,7 +89,7 @@ class ProblemWrapper:
 
         return total_ec
 
-    def get_grade_average_for_solution(self, solution, default_grade=None):
+    def get_grade_average_for_solution(self, solution):
         total_ec = 0
         total_points = 0
         for key, value in solution.items():
@@ -99,7 +98,7 @@ class ProblemWrapper:
 
             grade = key.grade
             if grade is None:
-                grade = default_grade
+                grade = self.default_grade
 
             if grade is not None:
                 total_points += grade * key.ec
@@ -108,11 +107,11 @@ class ProblemWrapper:
         return total_points / total_ec
 
     def solution_sorting(self, solutions):
-        ecs = []
+        points = []
         for solution in solutions:
-            ecs.append(self.get_grade_average_for_solution(solution))
+            points.append(self.get_grade_average_for_solution(solution))
 
-        solutions = [x for _, x in sorted(zip(ecs, solutions), key=lambda pair: pair[0])]
+        solutions = [x for _, x in sorted(zip(points, solutions), key=lambda pair: pair[0])]
 
         return solutions
 

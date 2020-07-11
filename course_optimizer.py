@@ -1,7 +1,6 @@
 '''
 Constraint Satisfaction Problem to find best lectures to complete
 Needs to be modified to suit a certain need. Is more of a template now
-Requires python-constraint
 '''
 
 from collections import defaultdict
