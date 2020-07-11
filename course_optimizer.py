@@ -5,7 +5,7 @@ Needs to be modified to suit a certain need. Is more of a template now
 
 from collections import defaultdict
 
-import constraint
+import constraint  # http://labix.org/doc/constraint/
 import pandas as pd
 
 from helpers.lecture import Lecture
@@ -16,8 +16,11 @@ class ProblemWrapper:
         self.credit_limit = 120
         self.theo_limit = 10
         self.area_limit = [18, 8, 8]
+        self.max_allowed_lectures = 9  # In Master it is unrealistic to do more than N lectures (except thesis practical courses seminars etc.)
         self.taken_lecture_names = ['Computer Vision I: Variational Methods', 'Computer Vision II: Multiple View Geometry', 'Natural Language Processing',
                                     'Introduction to Deep Learning', 'Advanced Deep Learning for Computer Vision']
+
+        self.preferred_areas = ['COMPUTER GRAPHICS AND VISION', 'MACHINE LEARNING AND ANALYTICS', 'DIGITAL BIOLOGY AND DIGITAL MEDICINE']
 
         self.problem = constraint.Problem()
         self.lectures = self.create_lectures()
@@ -39,14 +42,16 @@ class ProblemWrapper:
             if taken_lecture.theo:
                 self.existing_theo_credits += taken_lecture.ec
         self.problem.addVariables(self.lectures, [0, 1])
+        self.problem.addConstraint(constraint.MaxSumConstraint(self.max_allowed_lectures - len(self.taken_lecture_names)), self.lectures)
+        self.problem.addConstraint(constraint.FunctionConstraint(self.pruning_constraint), self.lectures)
+        self.problem.addConstraint(constraint.FunctionConstraint(self.area_constraint), self.lectures)
+        self.problem.addConstraint(constraint.FunctionConstraint(self.credit_constraint), self.lectures)
+        self.problem.addConstraint(constraint.FunctionConstraint(self.theo_constraint), self.lectures)
 
-        self.problem.addConstraint(self.credit_constraint, self.lectures)
-        self.problem.addConstraint(self.theo_constraint, self.lectures)
-        self.problem.addConstraint(self.area_constraint, self.lectures)
         solutions = self.problem.getSolutions()
         solutions = self.solution_sorting(solutions)
         print(len(solutions))
-        for i in range(5):
+        for i in range(100):
             print(self.get_credits_for_solution(solutions[i]))
             print(self.solution_to_str(solutions[i]))
 
@@ -64,15 +69,41 @@ class ProblemWrapper:
                 lectures.append(Lecture(name=row['Title'], ec=int(row['Credits']), area=current_area, theo=row['THEO'] == 'THEO'))
         return lectures
 
-    def credit_constraint(self, *bools):
-        sum = self.exitings_credits
+    def pruning_constraint(self, *bools):
+        total_credits = 0
         for idx in range(len(bools)):
             if bools[idx]:
-                sum += self.lectures[idx].ec
-                if sum >= self.credit_limit * 1.3:
-                    return False
+                total_credits += self.lectures[idx].ec
+        to_many_credits = total_credits > 60  # As the rest of the credits are guaranteed from thesis etc. Never a need for this many lecture credits
+        if to_many_credits:
+            return False
 
-        return sum >= self.credit_limit
+        return True
+
+    def area_constraint(self, *bools):
+        areas = defaultdict(int)
+        for idx in range(len(bools)):
+            if bools[idx]:
+                areas[self.lectures[idx].area] += self.lectures[idx].ec
+        for taken_lecture in self.taken_lectures:
+            areas[taken_lecture.area] += taken_lecture.ec
+        areas.pop('None', None)
+        values = areas.values() if self.preferred_areas is None else [value for key, value in areas.items() if key in self.preferred_areas]
+        if len(values) < 3:
+            return False
+        sorted_areas = sorted(values, reverse=True)
+        if sorted_areas[0] >= 18 and sorted_areas[1] >= 8 and sorted_areas[2] >= 8:
+            return True
+        else:
+            return False
+
+    def credit_constraint(self, *bools):
+        total_sum = self.exitings_credits
+        for idx in range(len(bools)):
+            if bools[idx]:
+                total_sum += self.lectures[idx].ec
+
+        return total_sum >= self.credit_limit
 
     def theo_constraint(self, *bools):
         theo_credits = self.existing_theo_credits
@@ -80,25 +111,7 @@ class ProblemWrapper:
             if bools[idx] and self.lectures[idx].theo:
                 theo_credits += self.lectures[idx].ec
 
-                if theo_credits >= self.theo_limit * 2:
-                    return False
-
         return theo_credits >= self.theo_limit
-
-    def area_constraint(self, *bools):
-        areas = defaultdict(int)
-        for idx in range(len(bools)):
-            if bools[idx]:
-                areas[self.lectures[idx].area] += self.lectures[idx].ec
-
-        for taken_lecture in self.taken_lectures:
-            areas[taken_lecture.area] += taken_lecture.ec
-        areas.pop('None', None)
-        sorted_areas = sorted(areas.values(), reverse=True)
-        if len(sorted_areas) >= 3 and sorted_areas[0] >= 18 and sorted_areas[1] >= 8 and sorted_areas[2] >= 8:
-            return True
-        else:
-            return False
 
     def get_credits_for_solution(self, solution):
         total_ec = 0
