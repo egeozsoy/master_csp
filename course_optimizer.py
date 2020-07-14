@@ -70,7 +70,7 @@ class ProblemWrapper:
         return lectures
 
     def pruning_constraint(self, *bools):
-        total_credits = 0
+        total_credits = self.exitings_credits
         for idx in range(len(bools)):
             if bools[idx]:
                 total_credits += self.lectures[idx].ec
