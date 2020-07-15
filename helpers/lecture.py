@@ -1,10 +1,11 @@
 class Lecture:
-    def __init__(self, name, ec, area, theo=False, grade=None):
+    def __init__(self, name, ec, area, theo=False, compulsory = False, grade=None):
         self.name = name
         self.ec = ec
         self.theo = theo
         self.area = area
         self.grade = grade
+        self.compulsory = compulsory
 
     def __cmp__(self, other):
         return self.name < other.name
