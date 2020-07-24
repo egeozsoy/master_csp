@@ -4,6 +4,7 @@ Needs to be modified to suit a certain need. Is more of a template now
 '''
 
 from collections import defaultdict
+from time import time
 
 import constraint  # http://labix.org/doc/constraint/
 import pandas as pd
@@ -47,8 +48,10 @@ class ProblemWrapper:
         self.problem.addConstraint(constraint.FunctionConstraint(self.area_constraint), self.lectures)
         self.problem.addConstraint(constraint.FunctionConstraint(self.credit_constraint), self.lectures)
         self.problem.addConstraint(constraint.FunctionConstraint(self.theo_constraint), self.lectures)
-
+        start = time()
         solutions = self.problem.getSolutions()
+        print(f'Took {time() - start}')
+        print(len(solutions))
         solutions = self.solution_sorting(solutions)
         print(len(solutions))
         for i in range(100):
@@ -68,17 +71,6 @@ class ProblemWrapper:
             if row['ID'][:2] == 'IN':
                 lectures.append(Lecture(name=row['Title'], ec=int(row['Credits']), area=current_area, theo=row['THEO'] == 'THEO'))
         return lectures
-
-    def pruning_constraint(self, *bools):
-        total_credits = self.exitings_credits
-        for idx in range(len(bools)):
-            if bools[idx]:
-                total_credits += self.lectures[idx].ec
-        to_many_credits = total_credits > 60  # As the rest of the credits are guaranteed from thesis etc. Never a need for this many lecture credits
-        if to_many_credits:
-            return False
-
-        return True
 
     def area_constraint(self, *bools):
         areas = defaultdict(int)
