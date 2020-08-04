@@ -6,9 +6,11 @@ Needs to be modified to suit a certain need. Is more of a template now
 from collections import defaultdict
 from time import time
 
-import constraint  # http://labix.org/doc/constraint/
+import monkeytype
 import pandas as pd
 
+# import constraint  # http://labix.org/doc/constraint/
+import cython_constraint as constraint
 from helpers.lecture import Lecture
 
 
@@ -43,7 +45,7 @@ class ProblemWrapper:
             if taken_lecture.theo:
                 self.existing_theo_credits += taken_lecture.ec
         self.problem.addVariables(self.lectures, [0, 1])
-        self.problem.addConstraint(constraint.MaxSumConstraint(self.max_allowed_lectures - len(self.taken_lecture_names)), self.lectures)
+        self.problem.addConstraint(constraint.MaxSumConstraint(1), self.lectures)
         self.problem.addConstraint(constraint.FunctionConstraint(self.area_constraint), self.lectures)
         self.problem.addConstraint(constraint.FunctionConstraint(self.credit_constraint), self.lectures)
         self.problem.addConstraint(constraint.FunctionConstraint(self.theo_constraint), self.lectures)
@@ -133,4 +135,5 @@ class ProblemWrapper:
 
 
 if __name__ == '__main__':
-    problem_wrapper = ProblemWrapper()
+    with monkeytype.trace():
+        problem_wrapper = ProblemWrapper()
