@@ -42,6 +42,8 @@ class ProblemWrapper:
             self.exitings_credits += taken_lecture.ec
             if taken_lecture.theo:
                 self.existing_theo_credits += taken_lecture.ec
+
+        self.lectures = sorted(self.lectures)
         self.problem.addVariables(self.lectures, [0, 1])
         self.problem.addConstraint(constraint.MaxSumConstraint(self.max_allowed_lectures - len(self.taken_lecture_names)), self.lectures)
         self.problem.addConstraint(constraint.FunctionConstraint(self.area_constraint), self.lectures)
