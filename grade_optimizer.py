@@ -15,22 +15,21 @@ class ProblemWrapper:
         self.theo_limit = 10
         self.interdisciplinary_limit = 6
         self.area_limit = [18, 8, 8]
-        self.default_grade = 1.7
-        self.lectures = [Lecture(name='Computer Vision II: Multiple View Geometry', ec=8, area='COMPUTER GRAPHICS AND VISION', theo=True, grade=3.7),
-                         Lecture(name='Computational Social Choice', ec=5, area='None', theo=True, grade=None),
-                         Lecture(name='Natural Language Processing', ec=6, area='MACHINE LEARNING AND ANALYTICS', grade=1.0),
-                         Lecture(name='Introduction to Deep Learning', ec=6, area='MACHINE LEARNING AND ANALYTICS', grade=1.3),
-                         Lecture(name='Advanced Deep Learning for Computer Vision', ec=8, area='COMPUTER GRAPHICS AND VISION', grade=None),
-                         Lecture(name='Computer Vision 3', ec=6, area='COMPUTER GRAPHICS AND VISION', grade=None),
-                         Lecture(name='Seminar', ec=5, area='None', grade=1.3, compulsory=True),
-                         Lecture(name='Practical Course', ec=10, area='None', grade=1.0, compulsory=True),
-                         Lecture(name='IDP', ec=16, area='None', grade=1.3, compulsory=True),
-                         Lecture(name='Guided Research', ec=10, area='None', grade=1.3),
-                         Lecture(name='Thesis', ec=30, area='None', grade=1.0, compulsory=True),
+        self.default_grade = None
+        self.lectures = [Lecture(name='Computer Vision I: Variational Methods', ec=8, area='COMPUTER GRAPHICS AND VISION', theo=True, grade=3.0),
+                         Lecture(name='Natural Language Processing', ec=6, area='MACHINE LEARNING AND ANALYTICS', grade=2.3),
+                         Lecture(name='Introduction to Deep Learning', ec=6, area='MACHINE LEARNING AND ANALYTICS', grade=1.0),
+                         Lecture(name='Seminar', ec=5, area='None', grade=1.0, compulsory=True),
                          Lecture(name='Language1', ec=3, area='interdisciplinary', grade=1.7),
-                         Lecture(name='Language2', ec=3, area='interdisciplinary', grade=1.0),
-                         Lecture(name='BIO LECTURE', ec=5, area='BIO', grade=None),
+                         Lecture(name='Computer Vision II: Multiple View Geometry', ec=8, area='COMPUTER GRAPHICS AND VISION', theo=True, grade=1.7),
+                         Lecture(name='Language2', ec=3, area='interdisciplinary', grade=1.7),
+                         Lecture(name='Practical Course', ec=10, area='None', compulsory=True, grade=None),
+                         Lecture(name='Advanced Deep Learning for Computer Vision', ec=8, area='COMPUTER GRAPHICS AND VISION', grade=None),
+                         Lecture(name='IDP', ec=16, area='None', compulsory=True, grade=None),
+                         Lecture(name='Guided Research', ec=10, area='None', grade=None),
+                         Lecture(name='BIO LECTURE', ec=6, area='BIO', grade=None),
                          Lecture(name='BIO LECTURE2', ec=6, area='BIO', grade=None),
+                         Lecture(name='Thesis', ec=30, area='None', compulsory=True, grade=None)
                          ]
 
         self.problem = constraint.Problem()
