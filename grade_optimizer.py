@@ -3,6 +3,7 @@ Constraint Satisfaction Problem to find best lectures to select to get the best 
 '''
 
 from collections import defaultdict
+from typing import Dict, List
 
 import constraint
 
@@ -10,7 +11,7 @@ from helpers.lecture import Lecture
 
 
 class ProblemWrapper:
-    def __init__(self):
+    def __init__(self) -> None:
         self.credit_limit = 120
         self.theo_limit = 10
         self.interdisciplinary_limit = 6
@@ -49,7 +50,7 @@ class ProblemWrapper:
             print(self.solution_to_str(solutions[i]))
             print()
 
-    def credit_constraint(self, *bools):
+    def credit_constraint(self, *bools) -> bool:
         total_sum = 0
         for idx in range(len(bools)):
             if bools[idx]:
@@ -58,7 +59,7 @@ class ProblemWrapper:
                     return False
         return total_sum >= self.credit_limit
 
-    def interdisciplinary_contraint(self, *bools):
+    def interdisciplinary_contraint(self, *bools) -> bool:
         interdisciplinary_credits = 0
         for idx in range(len(bools)):
             if bools[idx] and self.lectures[idx].area == 'interdisciplinary':
@@ -66,13 +67,13 @@ class ProblemWrapper:
 
         return interdisciplinary_credits >= self.interdisciplinary_limit
 
-    def compulsory_constraint(self, *bools):
+    def compulsory_constraint(self, *bools) -> bool:
         for idx in range(len(bools)):
             if not bools[idx] and self.lectures[idx].compulsory:
                 return False
         return True
 
-    def theo_constraint(self, *bools):
+    def theo_constraint(self, *bools) -> bool:
         theo_credits = 0
         for idx in range(len(bools)):
             if bools[idx] and self.lectures[idx].theo:
@@ -80,7 +81,7 @@ class ProblemWrapper:
 
         return theo_credits >= self.theo_limit
 
-    def area_constraint(self, *bools):
+    def area_constraint(self, *bools) -> bool:
         areas = defaultdict(int)
         for idx in range(len(bools)):
             if bools[idx]:
@@ -94,7 +95,7 @@ class ProblemWrapper:
         else:
             return False
 
-    def get_credits_for_solution(self, solution):
+    def get_credits_for_solution(self, solution: Dict[Lecture, int]) -> int:
         total_ec = 0
         for key, value in solution.items():
             if value == 0:
@@ -104,7 +105,7 @@ class ProblemWrapper:
 
         return total_ec
 
-    def get_grade_average_for_solution(self, solution):
+    def get_grade_average_for_solution(self, solution: Dict[Lecture, int]) -> float:
         total_ec = 0
         total_points = 0
         for key, value in solution.items():
@@ -121,7 +122,7 @@ class ProblemWrapper:
 
         return total_points / total_ec
 
-    def solution_sorting(self, solutions):
+    def solution_sorting(self, solutions: List[Dict[Lecture, int]]) -> List[Dict[Lecture, int]]:
         points = []
         for solution in solutions:
             points.append(self.get_grade_average_for_solution(solution))
@@ -130,7 +131,7 @@ class ProblemWrapper:
 
         return solutions
 
-    def solution_to_str(self, solution):
+    def solution_to_str(self, solution: Dict[Lecture, int]) -> str:
         out = ''
         for key, value in solution.items():
             if value:
